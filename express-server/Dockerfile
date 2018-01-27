@@ -5,6 +5,7 @@ WORKDIR /src
 ADD package.json /src/
 ADD .babelrc /src/
 ADD .eslintrc.json /src/
+ADD swagger.json /src/
 RUN npm install nodemon -g
 RUN npm install -g babel-cli
 RUN npm i -g eslint

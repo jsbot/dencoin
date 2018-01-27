@@ -3,19 +3,12 @@ import express from 'express';
 import http from 'http';
 import bodyParser from 'body-parser';
 import conf from './conf/dev';
-import swaggerUi from 'swagger-ui-express';
-
 
 export const app = express ();
-
 
 // Parsers for POST data
 app.use (bodyParser.json ());
 app.use (bodyParser.urlencoded ({extended:true}));
-
-
-
-
 
 // Cross Origin middleware
 app.use (function (req, res, next) {
@@ -30,8 +23,9 @@ require ('./routes') (app);
 //const api = ;
 
 //swagger entry Point
-let  swaggerDocument = require('swagger.json');
+/*let swaggerDocument = require('../swagger.json');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api/v1', router);*/
 
 /**
  * Get port from environment and store in Express.
