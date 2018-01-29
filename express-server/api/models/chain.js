@@ -2,7 +2,7 @@
 const crypto = require('crypto');
 import Block from '../models/block';
 //creating genesys Block. Start point of bockchain
-const genesisBlock = new Block(0, '816534932c2b7154836da6afc367695e6337db8a921823784c14378abed4f7d7', null, 1465154705, 'my genesis block!!', 10, 0);
+const genesisBlock = new Block(0, '816534932c2b7154836da6afc367695e6337db8a921823784c14378abed4f7d7', null, 1465154705, 'my genesis block!!', 10, 0, null);
 
 //adding genesys as first block
 const blockchain = [genesisBlock];
@@ -57,12 +57,20 @@ export default class Chain {
 	}
 	//Method whaere we creating actual blocks
 	generateNextBlock(blockData){
-		const previousBlock = this._getLatestBlock();
-		const nextIndex = previousBlock.index + 1;
-		const nextTimestamp = new Date().getTime() / 1000;
-		let newBlock = this.findBlock(nextIndex, previousBlock.hash, nextTimestamp, blockData, this.getDifficulty(this.getChain()));
-		this.addNewBlock(newBlock);
-		return newBlock;
+		return new Promise((resolve, reject) => {
+			const previousBlock = this._getLatestBlock();
+			const nextIndex = previousBlock.index + 1;
+			const nextTimestamp = new Date().getTime() / 1000;
+			let newBlock = this.findBlock(nextIndex, previousBlock.hash, nextTimestamp, blockData, this.getDifficulty(this.getChain()));
+			if(newBlock){
+				this.addNewBlock(newBlock);
+				resolve(newBlock);
+			}else{
+				reject('have error on creating new block');
+			}
+
+		});
+
 
 	}
 	//Method for adding block to chain
@@ -97,7 +105,9 @@ export default class Chain {
 			let hash = this._generateHash(index+previousHash+timestamp+data+difficulty+nonce);
 			if (this._hashMatchDificulty(hash, difficulty)) {
 				iter = false;
-				return new Block(index, hash, previousHash, timestamp, data, difficulty, nonce);
+				this.transactions.addMiningTansaction();
+				console.log('transactions-------->', this.transactions);
+				return new Block(index, hash, previousHash, timestamp, data, difficulty, nonce, this.transactions);
 			}
 			nonce++;
 		}
@@ -110,6 +120,12 @@ export default class Chain {
 		} else {
 			return latestBlock.difficulty;
 		}
+	}
+	addTransactionPool(transactions){
+		this.transactions = transactions;
+	}
+	getLatesBlockIndex(){
+		return this.blockchain[this.blockchain.length-1].index;
 	}
 
 

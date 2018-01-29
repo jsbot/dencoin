@@ -4,7 +4,7 @@
  * Class which hold block structure
  * */
 export default class Block {
-	constructor(index, hash, previousHash, timestamp, data, difficulty, nonce) {
+	constructor(index, hash, previousHash, timestamp, data, difficulty, nonce, transactions) {
 		this.index = index;
 		this.previousHash = previousHash;
 		this.timestamp = timestamp;
@@ -12,5 +12,6 @@ export default class Block {
 		this.hash = hash;
 		this.difficulty = difficulty;
 		this.nonce = nonce;
+		this.transactions = transactions;
 	}
 }
