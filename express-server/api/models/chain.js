@@ -1,13 +1,12 @@
 'use strict';
 const crypto = require('crypto');
 import Block from '../models/block';
+import conf from '../conf/dev';
 //creating genesys Block. Start point of bockchain
 const genesisBlock = new Block(0, '816534932c2b7154836da6afc367695e6337db8a921823784c14378abed4f7d7', null, 1465154705, 'my genesis block!!', 10, 0, null);
 
 //adding genesys as first block
 const blockchain = [genesisBlock];
-const BLOCK_GENERATION_INTERVAL = 10;
-const DIFFICULTY_ADJUSTMENT_INTERVAL = 10;
 /**
  * Main class for blockchain generation and manipulation
  * */
@@ -44,8 +43,8 @@ export default class Chain {
 	}
 	//Method for changing mining dificulty
 	_getAdjustedDifficulty(latestBlock, aBlockchain){
-		let prevAdjustmentBlock = aBlockchain[aBlockchain.length - DIFFICULTY_ADJUSTMENT_INTERVAL];
-		let timeExpected = BLOCK_GENERATION_INTERVAL * DIFFICULTY_ADJUSTMENT_INTERVAL;
+		let prevAdjustmentBlock = aBlockchain[aBlockchain.length - conf.DIFFICULTY_ADJUSTMENT_INTERVAL];
+		let timeExpected = conf.BLOCK_GENERATION_INTERVAL * conf.DIFFICULTY_ADJUSTMENT_INTERVAL;
 		let timeTaken = latestBlock.timestamp - prevAdjustmentBlock.timestamp;
 		if (timeTaken < timeExpected / 2) {
 			return prevAdjustmentBlock.difficulty + 1;
@@ -106,7 +105,6 @@ export default class Chain {
 			if (this._hashMatchDificulty(hash, difficulty)) {
 				iter = false;
 				this.transactions.addMiningTansaction();
-				console.log('transactions-------->', this.transactions);
 				return new Block(index, hash, previousHash, timestamp, data, difficulty, nonce, this.transactions);
 			}
 			nonce++;
@@ -115,7 +113,7 @@ export default class Chain {
 	//Mining dificulty settings
 	getDifficulty(aBlockchain) {
 		let latestBlock = aBlockchain[aBlockchain.length - 1];
-		if (latestBlock.index % DIFFICULTY_ADJUSTMENT_INTERVAL === 0 && latestBlock.index !== 0) {
+		if (latestBlock.index % conf.DIFFICULTY_ADJUSTMENT_INTERVAL === 0 && latestBlock.index !== 0) {
 			return this._getAdjustedDifficulty(latestBlock, aBlockchain);
 		} else {
 			return latestBlock.difficulty;

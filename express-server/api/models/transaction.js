@@ -1,8 +1,6 @@
 'use strict';
 
-//TODO: move const to config
-const MINER = 'test1';
-const REWARD = 50;
+import conf from '../conf/dev';
 
 /**
  * Class which hold transaction structure
@@ -15,16 +13,21 @@ class Transaction {
 	}
 	//simple adding miner reward
 	addMiningTansaction(){
+		let haveMiner = false;
 		this.txOut.map(outTx => {
-			if(outTx.key == MINER){
-				outTx.amount  = outTx.amount + REWARD;
+			if(outTx.key == conf.MINER){
+				outTx.amount  = outTx.amount + conf.REWARD;
+				haveMiner = true;
 			}
-		})
+		});
+		if(!haveMiner){
+			this.txOut.push({key: conf.MINER, amount: conf.REWARD});
+		}
 		this.txIn.push({
-			"key": MINER,
-			"amount": REWARD,
-			"from": "chain"
-		})
+			'key': conf.MINER,
+			'amount': conf.REWARD,
+			'from': 'chain'
+		});
 
 	}
 }
@@ -59,15 +62,13 @@ class TransactionOut{
 						inPool = true;
 						success = true;
 					}
-				})
+				});
 				if(!inPool) {
 					_this._addTxOutItem(txIn.key, txIn.amount);
 					success = true;
 				}
-
-
 			}
-		})
+		});
 		return success;
 	}
 	//Simple insert new owner
@@ -80,4 +81,4 @@ module.exports = {
 	TransactionInst : Transaction,
 	TransactionIn: TransactionIn,
 	TransactionOut: TransactionOut
-}
+};

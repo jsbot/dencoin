@@ -1,8 +1,9 @@
-import { Component, OnInit, } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import {FormGroup,  FormControl } from '@angular/forms';
 import {HttpClient} from "@angular/common/http";
 import "rxjs/add/operator/map";
-//import { ResizingCroppingImagesExample01Component } from '../../common/resizing-cropping-images-example-01/resizing-cropping-images-example-01.component';
-import * as Cropper from 'cropperjs';
+
+
 
 @Component({
   selector: 'dashboard',
@@ -11,44 +12,65 @@ import * as Cropper from 'cropperjs';
 })
 export class DashboardComponent implements OnInit {
 
-  title = 'app works!';
-  imageSrc = '';
-  // Link to our api, pointing to localhost
   API = 'http://localhost:3000';
+  amount = 100;
+  data = {
+    "data":{
+      "from": "test1"
+    }
+  }
+  denCoinForm = new FormGroup ({
+    recipient : new FormControl(),
+    amount : new FormControl(),
+  });
 
-  // Declare empty list of people
-  people: any[] = [];
-  cropper;
-  image;
-  previews;
-
+  message = '';
+  showMessage = false;
   constructor(private http: HttpClient) {
 
   }
 
 
   ngOnInit() {
-    this.getAllPeople();
-    console.log('dashboard init');
-
-    let _this = this;
-
-    //this.image2 = document.querySelector('#image2');
-    this.previews = document.querySelectorAll('.preview');
+    this.getAmount();
 
   }
 
 
+  getAmount() {
+    this.http.post<any>(`${this.API}/amount`, this.data, )
+      .subscribe(res => {
+        this.amount = (typeof res.amount !== 'string')? res.amount : 0;
 
-  // Get all users from the API
-  getAllPeople() {
-    console.log('ap')
-    this.http.get<any>(`${this.API}/`)
-      .subscribe(people => {
-        console.log(people)
-        this.people = people
       })
   }
+
+
+  sendTransaction(){
+    let _this =this;
+    let transaction = {
+      data: {
+        key: this.denCoinForm.controls['recipient'].value,
+        amount: this.denCoinForm.controls['amount'].value,
+        from: "test1"
+      }
+    }
+
+    this.http.post<any>(`${this.API}/addTransaction`, transaction)
+      .subscribe(res => {
+        console.log(res);
+        _this.getAmount();
+        _this.showMessage = true;
+        _this.message = res.message;
+        setTimeout(() => {
+          _this.showMessage = false;
+          _this.message = '';
+        }, 4000);
+      })
+
+  }
+}
+
 
 
 

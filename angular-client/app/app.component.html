@@ -1,15 +1,25 @@
-<nav class="navbar navbar-light bg-faded">
-  <div class="container">
-    <a class="navbar-brand" href="#">DenCoin</a>
-  </div>
-</nav>
 <div class="content">
   <div class="row">
-    <div class="col-md-3"></div>
-    <div class="col-md-6">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+      <div class="row">
+
+        <ul class="nav">
+          <li class="nav-item">
+            <a  routerLink="/" routerLinkActive="active" class="nav-link" href="#">Wallet</a>
+          </li>
+          <li class="nav-item">
+            <a  routerLink="/history" routerLinkActive="active" class="nav-link" href="#">Transactions History</a>
+          </li>
+          <li class="nav-item">
+            <a  routerLink="/miner" routerLinkActive="active" class="nav-link" href="#">Miner</a>
+          </li>
+        </ul>
+      </div>
+
       <router-outlet></router-outlet>
     </div>
-    <div class="col-md-3"></div>
+    <div class="col-md-1"></div>
   </div>
 </div>
 

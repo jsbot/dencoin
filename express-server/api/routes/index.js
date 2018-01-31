@@ -22,7 +22,7 @@ let api = (app) => {
 		res.send(denChain.getChain());
 	});
 	app.post('/mineBlock', (req, res) => {
-		let newBlock = denChain.generateNextBlock(req.body.data).then(block => {
+		denChain.generateNextBlock(req.body.data).then(block => {
 			transactionsPool = new Transaction.TransactionInst(denChain.getLatesBlockIndex(), [], transactionsOut.getTxOut());
 			denChain.addTransactionPool(transactionsPool);
 			//TODO: send block mined
@@ -39,6 +39,34 @@ let api = (app) => {
 			transactionsPool.txOut = transactionsOut.getTxOut();
 		}
 		res.json(result);
+	});
+	app.post('/amount', (req, res) => {
+		let filtered = transactionsPool.txOut.filter(miner => miner.key == req.body.data.from);
+		let minerAmount = (filtered.length > 0)? filtered[0].amount: 'no amount available.';
+		res.json({amount: minerAmount});
+	});
+	app.post('/history', (req, res) => {
+		let customer = req.body.data.from;
+		let currentBlockchain = denChain.getChain();
+		let txIn = [];
+		let txOut = [];
+		let txInPool = [];
+		currentBlockchain.map(block => {
+			if(block.transactions){
+				let filteredIn = block.transactions.txIn.filter(transaction => transaction.key == customer);
+				txIn = txIn.concat(filteredIn);
+				let filteredOut = block.transactions.txIn.filter(transaction => transaction.from == customer);
+				txOut = txOut.concat(filteredOut);
+			}
+		});
+		txInPool = txInPool.concat(transactionsPool.txIn.filter(transaction => transaction.from == customer));
+
+		res.json({transactions: {
+			in: txIn,
+			out: txOut,
+			pool: txInPool
+		}
+		});
 	});
 
 	/*app.get('/peers', (req, res) => {
